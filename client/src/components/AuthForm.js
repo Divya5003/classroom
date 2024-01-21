@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
+import { setToken } from '@/utils/sessions';
 
 const AuthForm = ({ type }) => {
     const [userType, setUserType] = useState('student');
@@ -29,12 +30,16 @@ const AuthForm = ({ type }) => {
                 password,
             });
 
+            if (type === 'login') {
+                setToken(response.data.token);
+            }
+
             // router.push(`/${userType === 'student' ? 'student' : 'teacher'}/${type === 'register' ? 'login' : 'dashboard'}/${response.data.token}`);
-            router.push(type === 'login' ? `${userType === 'student' ? 'student' : 'teacher'}/dashboard` : '/login');
+            router.push(type === 'login' ? `${userType === 'student' ? 'student' : 'teacher'}` : '/login');
 
         } catch (error) {
-            setMessage(error.response.data.error);
-            console.log(error.response.data.error);
+            setMessage(error.response?.data.error);
+            console.log(error.response?.data.error);
         }
     };
 

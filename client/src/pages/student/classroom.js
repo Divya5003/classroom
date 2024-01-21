@@ -1,8 +1,21 @@
 import Navbar from '@/components/Navbar'
 import Sheets from '@/components/Sheets'
-import React from 'react'
+import { getToken } from '@/utils/sessions';
+import { useRouter } from 'next/router';
+import React, { useEffect } from 'react'
 
 const Classroom = () => {
+    const token = getToken();
+    const router = useRouter();
+
+    useEffect(() => {
+        // Check for the presence of the token
+        if (!token) {
+            // Redirect to the login page if the token is not present
+            router.push('/login');
+        }
+    }, [token, router]);
+
     return (
         <>
             <Navbar />

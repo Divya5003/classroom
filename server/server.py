@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, session
 from flask_pymongo import PyMongo
 from werkzeug.utils import secure_filename
 from bson import ObjectId
@@ -7,22 +7,28 @@ from gridfs import GridFS
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from dotenv import load_dotenv
+from flask_session import Session
+from flask_jwt_extended import create_access_token, JWTManager
 import os
 
 load_dotenv()
 
-mongo_uri = str(os.getenv('MONGO_URI'))
-
 # app instance
 app = Flask(__name__)
+jwt = JWTManager(app)
+
+app.config["MONGO_URI"] = str(os.getenv('MONGO_URI'))
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['JWT_SECRET_KEY'] = str(os.getenv('SECRET_KEY'))
+
+mongo = PyMongo(app)
+Session(app)
 CORS(app)
 
-app.config["MONGO_URI"] = mongo_uri
-mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
 
 # Connect to MongoDB using pymongo for GridFS
-client = MongoClient(mongo_uri)
+client = MongoClient(str(os.getenv('MONGO_URI')))
 db = client.get_database()
 fs = GridFS(db)
 
@@ -66,7 +72,8 @@ def login(user_type):
     user = mongo.db.users.find_one({'username': username, 'user_type': user_type})
 
     if user and bcrypt.check_password_hash(user['password'], password):
-        return jsonify({'message': 'Login successful'}), 200
+        token = create_access_token(identity=str(user['_id']))
+        return jsonify({'message': 'Login successful', 'token': token}), 200
     else:
         return jsonify({'error': 'Invalid username or password'}), 401
 

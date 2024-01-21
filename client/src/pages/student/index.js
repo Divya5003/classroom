@@ -1,8 +1,21 @@
 import Classes from '@/components/Classes'
 import Navbar from '@/components/Navbar'
-import React from 'react'
+import { getToken } from '@/utils/sessions';
+import { useRouter } from 'next/router';
+import React, { useEffect } from 'react'
 
 const Dashboard = () => {
+    const router = useRouter();
+    const token = getToken();
+
+    useEffect(() => {
+        // Check for the presence of the token
+        if (!token) {
+            // Redirect to the login page if the token is not present
+            router.push('/login');
+        }
+    }, [token, router]);
+
     return (
         <>
             <Navbar />

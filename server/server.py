@@ -72,11 +72,58 @@ def login(user_type):
     user = mongo.db.users.find_one({'username': username, 'user_type': user_type})
 
     if user and bcrypt.check_password_hash(user['password'], password):
-        token = create_access_token(identity=str(user['_id']))
+        claims = {'user_type': user['user_type'], 'username': user['username']}
+        token = create_access_token(identity=str(user['_id']), additional_claims=claims)
         return jsonify({'message': 'Login successful', 'token': token}), 200
     else:
         return jsonify({'error': 'Invalid username or password'}), 401
 
+# Create class
+@app.route('/create', methods=['POST'])
+def create():
+    data = request.get_json()
+    if 'name' not in data:
+        return jsonify({'error': 'Missing classroom name'}), 400
+    
+    name = data['name']
+    teacher = data['username']
+    class_code = mongo.db.classrooms.insert_one({'name': name, 'teacher': teacher}).inserted_id
+    mongo.db.users.update_one({'username': teacher}, {'$push': {'classrooms': class_code}})
+
+    return jsonify({'message': f'Classroom created successfully with class-code: {class_code}'}), 201
+
+# Join class
+@app.route('/join', methods=['POST'])
+def join():
+    data = request.get_json()
+    if 'code' not in data:
+        return jsonify({'error': 'Missing classroom code'}), 400
+    
+    class_code = data['code']
+    student = data['username']
+
+    classroom = mongo.db.classrooms.find_one({'_id': ObjectId(class_code)})
+
+    if(classroom == None):
+        return jsonify({'error': 'Invalid classroom code'}), 400
+    
+    if(mongo.db.users.find_one({'username': student, 'classrooms': ObjectId(class_code)})):
+        return jsonify({'error': 'Student already enrolled in classroom'}), 400
+
+    mongo.db.users.update_one({'username': student}, {'$push': {'classrooms': ObjectId(class_code)}})
+
+    return jsonify({'message': 'Classroom joined successfully'}), 201
+
+# Get classes
+@app.route('/classes/<username>', methods=['GET'])
+def get_classes(username):
+    user = mongo.db.users.find_one({'username': username})
+    classrooms = user['classrooms']
+    classes = []
+    for classroom in classrooms:
+        class_info = mongo.db.classrooms.find_one({'_id': classroom})
+        classes.append({'name': class_info['name'], 'class_code': str(classroom)})
+    return jsonify({'classes': classes}), 200
 
 @app.route('/upload', methods=['POST'])
 def upload_file():

@@ -2,7 +2,8 @@ import Navbar from '@/components/Navbar'
 import Sheets from '@/components/Sheets'
 import { getToken } from '@/utils/sessions';
 import { useRouter } from 'next/router';
-import React, { useEffect } from 'react'
+import React, { useEffect } from 'react';
+import { jwtDecode } from "jwt-decode";
 
 const Classroom = () => {
     const token = getToken();
@@ -13,6 +14,9 @@ const Classroom = () => {
         if (!token) {
             // Redirect to the login page if the token is not present
             router.push('/login');
+        }
+        else if (jwtDecode(token).user_type === 'teacher') {
+            router.push('/teacher');
         }
     }, [token, router]);
 

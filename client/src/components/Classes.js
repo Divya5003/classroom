@@ -15,7 +15,7 @@ const Classes = ({ standard, subject, teacher }) => {
                 />
             </div>
             <div className='p-4'>
-                <h1 className='text-lg font-semibold'>{`${standard}/${subject}`}</h1>
+                <h1 className='text-lg font-semibold'>{`${standard}`}</h1>
             </div>
             <div className='p-4'>
                 <h2>{teacher}</h2>

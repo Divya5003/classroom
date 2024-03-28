@@ -115,14 +115,15 @@ def join():
     return jsonify({'message': 'Classroom joined successfully'}), 201
 
 # Get classes
-@app.route('/classes/<username>', methods=['GET'])
+@app.route('/classes/<username>')
 def get_classes(username):
     user = mongo.db.users.find_one({'username': username})
     classrooms = user['classrooms']
+    print(classrooms)
     classes = []
     for classroom in classrooms:
         class_info = mongo.db.classrooms.find_one({'_id': classroom})
-        classes.append({'name': class_info['name'], 'class_code': str(classroom)})
+        classes.append({'name': class_info['name'], 'teacher': class_info['teacher'] ,'class_code': str(classroom)})
     return jsonify({'classes': classes}), 200
 
 @app.route('/upload', methods=['POST'])

@@ -1,7 +1,7 @@
 import React from 'react'
 import { useRouter } from 'next/router';
 
-const Classes = ({ standard, subject, teacher }) => {
+const Classes = ({ id, subject, teacher }) => {
     const router = useRouter();
     return (
         <div className='m-4 bg-white shadow-xl rounded-lg cursor-pointer' onClick={() => router.push('/student/classroom')}>
@@ -15,7 +15,7 @@ const Classes = ({ standard, subject, teacher }) => {
                 />
             </div>
             <div className='p-4'>
-                <h1 className='text-lg font-semibold'>{`${standard}`}</h1>
+                <h1 className='text-lg font-semibold'>{subject}</h1>
             </div>
             <div className='p-4'>
                 <h2>{teacher}</h2>

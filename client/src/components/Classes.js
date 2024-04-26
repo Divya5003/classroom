@@ -1,10 +1,10 @@
 import React from 'react'
 import { useRouter } from 'next/router';
 
-const Classes = ({ id, subject, teacher }) => {
+const Classes = ({ subject, code }) => {
     const router = useRouter();
     return (
-        <div className='m-4 bg-white shadow-xl rounded-lg cursor-pointer' onClick={() => router.push('/student/classroom')}>
+        <div className='m-4 bg-white shadow-xl rounded-lg cursor-pointer' onClick={() => router.push(`/student/classroom?code=${code}`)}>
             <div className=''>
                 <img
                     className='w-fill'
@@ -18,7 +18,7 @@ const Classes = ({ id, subject, teacher }) => {
                 <h1 className='text-lg font-semibold'>{subject}</h1>
             </div>
             <div className='p-4'>
-                <h2>{teacher}</h2>
+                <h2>{code}</h2>
             </div>
         </div>
     )

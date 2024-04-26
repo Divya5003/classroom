@@ -1,26 +1,28 @@
-// import { getToken } from '@/utils/sessions';
+import { getToken } from '@/utils/sessions';
 import axios from 'axios';
-// import { jwtDecode } from 'jwt-decode';
 import React, { useState } from 'react'
 
 const Modal = ({ user }) => {
     const [name, setName] = useState('');
     const [code, setCode] = useState('');
     const [message, setMessage] = useState('');
-    // const token = getToken();
-    // const username = jwtDecode(token).username;
+    const username = getToken();
+
+   
+
+    
     const handleFormSubmit = async (e) => {
         e.preventDefault();
 
         if (user === 'teacher') {
             try {
-                const response = await axios.post('http://localhost:8000/create', {
+                const response = await axios.post('https://wsfda4sktc.execute-api.eu-west-2.amazonaws.com/v1/create', {
                     name,
                     username,
                 })
 
                 if (response.status === 200) {
-                    console.log(response.data.message);
+                    console.log(response.data);
                 }
             } catch (error) {
                 console.log(error.response?.data.error);
@@ -29,7 +31,7 @@ const Modal = ({ user }) => {
         }
         else {
             try {
-                const response = await axios.post('http://localhost:8000/join', {
+                const response = await axios.post('https://wsfda4sktc.execute-api.eu-west-2.amazonaws.com/v1/join-class', {
                     code,
                     username,
                 })
@@ -42,6 +44,7 @@ const Modal = ({ user }) => {
     return (
         <div className="fixed w-full h-full bg-black bg-opacity-60 flex z-50 items-center justify-center top-0 left-0">
             <div className="flex flex-col items-center bg-white rounded-md p-10">
+
                 <div className=''>
                     <h4 className='text-lg text-pink-700 font-semibold w-fit'>
                         {user === 'student' ? 'Join a class' : 'Create a class'}
@@ -79,6 +82,7 @@ const Modal = ({ user }) => {
                         </button>
                     </form>
                 </div>
+                
             </div>
         </div>
     )

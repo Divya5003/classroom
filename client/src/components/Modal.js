@@ -1,14 +1,14 @@
-import { getToken } from '@/utils/sessions';
+// import { getToken } from '@/utils/sessions';
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
+// import { jwtDecode } from 'jwt-decode';
 import React, { useState } from 'react'
 
 const Modal = ({ user }) => {
     const [name, setName] = useState('');
     const [code, setCode] = useState('');
     const [message, setMessage] = useState('');
-    const token = getToken();
-    const username = jwtDecode(token).username;
+    // const token = getToken();
+    // const username = jwtDecode(token).username;
     const handleFormSubmit = async (e) => {
         e.preventDefault();
 

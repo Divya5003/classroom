@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import { setToken } from '@/utils/sessions';
+import {getToken, setToken} from '@/utils/sessions';
+import { redirect } from 'next/dist/server/api-utils';
 
 const AuthForm = ({ type }) => {
     const [userType, setUserType] = useState('student');
@@ -25,22 +26,31 @@ const AuthForm = ({ type }) => {
         }
 
         try {
-            const response = await axios.post(`http://localhost:8000/${type}/${userType}`, {
-                username,
-                password,
-            });
+            if(type === 'register'){
+                const response = await axios.post(`https://wsfda4sktc.execute-api.eu-west-2.amazonaws.com/v1/create-user`, {
+                    "username": username,
+                    "password": password,
+                    "user_type": userType,
+                });
 
-            if (response.status === 200) {
-                console.log(response.data.message);
+                if (response.status === 200) {
+                    console.log(response.data);
+                    router.push("/login");
+                }
             }
+            else{
+                const response = await axios.post(`https://wsfda4sktc.execute-api.eu-west-2.amazonaws.com/v1/login`, {
+                    "username": username,
+                    "password": password,
+                    "user_type": userType,
+                });
 
-            if (type === 'login') {
-                setToken(response.data.token);
+                if (response.status === 200) {
+                    setToken(username);
+                    console.log(response.data);
+                    router.push(`${userType === 'student' ? '/student' : '/teacher'}`);
+                }
             }
-
-            // router.push(`/${userType === 'student' ? 'student' : 'teacher'}/${type === 'register' ? 'login' : 'dashboard'}/${response.data.token}`);
-            router.push(type === 'login' ? `${userType === 'student' ? 'student' : 'teacher'}` : '/login');
-
         } catch (error) {
             setMessage(error.response?.data.error);
             console.log(error.response?.data.error);

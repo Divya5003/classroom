@@ -1,66 +1,37 @@
 import Classes from '@/components/Classes'
 import Navbar from '@/components/Navbar'
-import { getToken } from '@/utils/sessions';
+import {getToken} from '@/utils/sessions';
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/router';
+import { stringify } from 'postcss';
 import React, { useEffect, useState } from 'react'
 
 const Dashboard = () => {
     const router = useRouter();
-    const [username, setUsername] = useState('');
+    const username = getToken();
     const [classes, setClasses] = useState([]);
-
-    // useEffect(() => {
-    //     const token = getToken();
-    //     setUsername(jwtDecode(token).username);
-    //     // Check for the presence of the token
-    //     if (!token) {
-    //         // Redirect to the login page if the token is not present
-    //         router.push('/login');
-    //     }
-    //     else if (jwtDecode(token).user_type === 'teacher') {
-    //         router.push('/teacher');
-    //     }
-    // }, [router]);
-
-    // const getClasses = async (username) => {
-    //     try {
-    //         console.log(username);
-    //         const response = await axios.get(`http://localhost:8000/classes/${username}`)
-    //         // if (response.status === 200) {
-    //         console.log(response);
-    //         setClasses(response);
-    //         // }
-    //     } catch (error) {
-    //         console.log(error.response?.data.error);
-    //     }
-    // }
-    // getClasses(username);
 
     useEffect(() => {
         const fetchData = async () => {
-            const token = getToken();
-            const decodedToken = jwtDecode(token);
-            setUsername(decodedToken.username);
+            console.log("username", username);
             // Check for the presence of the token
-            if (!token) {
-                // Redirect to the login page if the token is not present
-                router.push('/login');
-            } else if (jwtDecode(token).user_type === 'teacher') {
-                router.push('/teacher');
-            } else {
-                getClasses(jwtDecode(token).username);
-            }
+            // if (!username) {
+            //     // Redirect to the login page if the token is not present
+            //     router.push('/login');
+            // } else {
+                getClasses(username);
+            // }
         };
 
         const getClasses = async (username) => {
             try {
 
-                const response = await axios.get(`http://localhost:8000/classes/${username}`);
+                const response = await axios.post('https://wsfda4sktc.execute-api.eu-west-2.amazonaws.com/v1/get-classes', {
+                    "username": username
+                });
                 // Check if response.data is an array or an object
-                setClasses(response.data.classes);
-                console.log(response.data.classes);
+                setClasses(response.data.body.classes);
+                console.log(response);
             } catch (error) {
                 console.log(error);
             }

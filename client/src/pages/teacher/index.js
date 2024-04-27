@@ -18,7 +18,7 @@ const Dashboard = () => {
             //     // Redirect to the login page if the token is not present
             //     router.push('/login');
             // } else {
-                getClasses(username);
+            getClasses(username);
             // }
         };
 
@@ -45,10 +45,9 @@ const Dashboard = () => {
             <div className='main m-10 grid grid-cols-4 gap-4'>
                 {classes.map((classItem) => (
                     <Classes
-                        key={classItem}
-                        id={classItem.id}
+                        key={classItem.class_code}
                         subject={classItem.name}
-                        teacher={classItem.class_code}
+                        code={classItem.class_code}
                     />
                 ))}
             </div>

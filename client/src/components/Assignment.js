@@ -4,12 +4,14 @@ import React from "react";
 const Assignment = ({ student }) => {
   const router = useRouter();
   const pathname = router.pathname;
+  const id = router.query.id;
+
 
   return (
     <div
       className="m-4 p-4 bg-white shadow-xl rounded-lg cursor-pointer"
       onClick={() =>
-        router.push(`${pathname.slice(0, 8)}/submission?id=${student}`)
+        router.push(`${pathname.slice(0, 8)}/submission?id=${id}`)
       }
     >
       <h1 className="text-lg font-semibold">{student}</h1>

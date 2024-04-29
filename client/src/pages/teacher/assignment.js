@@ -1,4 +1,5 @@
 import Assignment from "@/components/Assignment";
+import Download from "@/components/Download";
 import Navbar from "@/components/Navbar";
 import { getToken } from "@/utils/sessions";
 import axios from "axios";
@@ -48,6 +49,9 @@ const assignment = () => {
       <div className="main m-10 gap-4">
         <div className="p-4">
           <h1 className="text-lg font-semibold">Assignment</h1>
+        </div>
+        <div className="p-4">
+          <Download file_id={assignments.file_id} />
         </div>
         <div className="grid grid-cols-2">
           <div className="p-4">

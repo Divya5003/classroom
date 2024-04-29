@@ -154,6 +154,66 @@ def upload_file():
 
         return jsonify({'message': 'File uploaded successfully'}), 200
 
+@app.route('/createAssignment', methods=['POST'])
+def createAssignment():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+
+    file = request.files['file']
+    description = request.form['description']
+    title=request.form['title']
+    classroom_id = request.form['classroom_id']
+
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+
+    if file:
+        # Ensure a secure filename
+        filename = secure_filename(file.filename)
+
+        # Save the file to MongoDB using GridFS
+        file_id = fs.put(file, filename=filename)
+    
+        result = mongo.db.assignments.insert_one({"file_id": file_id, "description": description,"title":title})
+        assignment_code = str(result.inserted_id)
+        
+        mongo.db.classroom.update_one(
+            {"_id":ObjectId(classroom_id)},
+            {'$push': {'assignments': assignment_code}}
+        )
+    
+        return jsonify({'message': 'File uploaded successfully'}), 200
+    
+
+@app.route('/upload-checked', methods=['POST'])
+def uploadchecked():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+
+    file = request.files['file']
+    assignment_id = request.form['assignment_id']
+    student = request.form['username']
+    assignment = mongo.db.assignments.find_one({"_id":ObjectId(assignment_id)})
+    # print(assignment_id)
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+
+    if file:
+        filename = secure_filename(file.filename)
+        file_id = fs.put(file, filename=filename)
+        submissions = assignment.get("submissions")
+        
+        for i in range(len(submissions)):
+            if(submissions[i].get("student_name") == student):
+                submissions[i].update({"checked_file_id": file_id})
+                
+        mongo.db.assignments.update_one(
+            {"_id": ObjectId(assignment_id)},
+            {"$set": { 'submissions': submissions }} 
+        )
+        return jsonify({'message': 'File uploaded successfully'}), 200
+
+
 @app.route('/download/<file_id>', methods=['GET'])
 def download_file(file_id):
     try:
@@ -162,7 +222,7 @@ def download_file(file_id):
         response = jsonify({'message': 'File retrieved successfully'})
         response.data = file.read()
         response.headers['Content-Type'] = 'application/octet-stream'
-        response.headers['Content-Disposition'] = f'attachment; filename={file.filename}'
+        response.headers["Content-Disposition"] = "attachment; filename={}".format(file.filename)
         return response
     except Exception as e:
         return jsonify({'error': f'Error retrieving file: {str(e)}'}), 500

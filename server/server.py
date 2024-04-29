@@ -145,9 +145,9 @@ def upload_file():
         file_id = fs.put(file, filename=filename)
         
         # Save file details (including GridFS ObjectId) to MongoDB
-        mongo.db.files.insert_one({'filename': filename, 'file_id': file_id})
+        # mongo.db.files.insert_one({'filename': filename, 'file_id': file_id})
     
-        db.assignments.update_one(
+        mongo.db.assignments.update_one(
             {"_id":ObjectId(assignment_id)},
             {'$push': {"submissions" : {"filename": filename, "file_id": str(file_id), "student_name": username}}}
         )

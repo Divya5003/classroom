@@ -23,7 +23,7 @@ const assignment = () => {
             formData.append('assignment_id', assignment_id);
             const response = await axios.post('http://localhost:8000/upload', formData)
 
-            console.log(response.json);
+            console.log(response);
         } catch (error) {
             console.log(error.response?.data.error)
         }

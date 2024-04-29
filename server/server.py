@@ -8,7 +8,7 @@ from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from dotenv import load_dotenv
 from flask_session import Session
-from flask_jwt_extended import create_access_token, JWTManager
+# from flask_jwt_extended import create_access_token, JWTManager
 import os
 
 load_dotenv()

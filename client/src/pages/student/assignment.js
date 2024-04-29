@@ -1,7 +1,33 @@
 import Navbar from '@/components/Navbar'
-import React from 'react'
+import { getToken } from '@/utils/sessions';
+import axios from 'axios'
+import { useRouter } from 'next/router';
+import React, { useState } from 'react'
+
 
 const assignment = () => {
+    // const [file, setFile] = useState(null);
+    const username = getToken();
+    const router = useRouter();
+    const assignment_id = router.query.id;
+
+    const handleSubmit = async (e) => {
+        const file = e.target.files[0];
+        if (file === null) {
+            console.log("jndjnd");
+        }
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('username', username);
+            formData.append('assignment_id', assignment_id);
+            const response = await axios.post('http://localhost:8000/upload', formData)
+
+            console.log(response.json);
+        } catch (error) {
+            console.log(error.response?.data.error)
+        }
+    }
     return (
         <>
             <Navbar />
@@ -21,6 +47,7 @@ const assignment = () => {
                                     type='file'
                                     className='rounded-md px-6 pt-6 pb-1 w-full text-lg focus:outline-none text-pink-700 bg-zinc-200 peer'
                                     placeholder=''
+                                    onChange={handleSubmit}
                                 />
                                 <label
                                     htmlFor='code'

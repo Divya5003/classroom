@@ -15,7 +15,6 @@ load_dotenv()
 
 # app instance
 app = Flask(__name__)
-jwt = JWTManager(app)
 
 app.config["MONGO_URI"] = str(os.getenv('MONGO_URI'))
 app.config['SESSION_TYPE'] = 'filesystem'
@@ -132,6 +131,8 @@ def upload_file():
         return jsonify({'error': 'No file part'}), 400
 
     file = request.files['file']
+    username = request.form['username']
+    assignment_id = request.form['assignment_id']
 
     if file.filename == '':
         return jsonify({'error': 'No selected file'}), 400
@@ -142,9 +143,14 @@ def upload_file():
 
         # Save the file to MongoDB using GridFS
         file_id = fs.put(file, filename=filename)
-
+        
         # Save file details (including GridFS ObjectId) to MongoDB
         mongo.db.files.insert_one({'filename': filename, 'file_id': file_id})
+    
+        db.assignments.update_one(
+            {"_id":ObjectId(assignment_id)},
+            {'$push': {"submissions" : {"filename": filename, "file_id": str(file_id), "student_name": username}}}
+        )
 
         return jsonify({'message': 'File uploaded successfully'}), 200
 

@@ -33,6 +33,7 @@ const Navbar = () => {
             {showModal &&
                 <Modal
                     user={`${pathname.includes('/student') ? 'student' : 'teacher'}`}
+                    closeModal={() => setShowModal(false)}
                 />
             }
         </div>

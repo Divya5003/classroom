@@ -2,15 +2,12 @@ import { getToken } from '@/utils/sessions';
 import axios from 'axios';
 import React, { useState } from 'react'
 
-const Modal = ({ user }) => {
+const Modal = ({ user, closeModal }) => {
     const [name, setName] = useState('');
     const [code, setCode] = useState('');
     const [message, setMessage] = useState('');
     const username = getToken();
 
-   
-
-    
     const handleFormSubmit = async (e) => {
         e.preventDefault();
 
@@ -24,6 +21,8 @@ const Modal = ({ user }) => {
                 if (response.status === 200) {
                     console.log(response.data);
                 }
+
+                closeModal();
             } catch (error) {
                 console.log(error.response?.data.error);
                 setMessage(error.response?.data.error);
@@ -35,6 +34,11 @@ const Modal = ({ user }) => {
                     code,
                     username,
                 })
+                if (response.status === 200) {
+                    console.log(response.data);
+                }
+
+                closeModal();
             } catch (error) {
                 console.log(error.response?.data.error);
                 setMessage(error.response?.data.error);
@@ -44,7 +48,6 @@ const Modal = ({ user }) => {
     return (
         <div className="fixed w-full h-full bg-black bg-opacity-60 flex z-50 items-center justify-center top-0 left-0">
             <div className="flex flex-col items-center bg-white rounded-md p-10">
-
                 <div className=''>
                     <h4 className='text-lg text-pink-700 font-semibold w-fit'>
                         {user === 'student' ? 'Join a class' : 'Create a class'}
@@ -82,7 +85,7 @@ const Modal = ({ user }) => {
                         </button>
                     </form>
                 </div>
-                
+
             </div>
         </div>
     )

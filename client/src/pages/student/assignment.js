@@ -1,15 +1,43 @@
+import Download from '@/components/Download';
 import Navbar from '@/components/Navbar'
 import { getToken } from '@/utils/sessions';
 import axios from 'axios'
 import { useRouter } from 'next/router';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 
 const assignment = () => {
-    // const [file, setFile] = useState(null);
     const username = getToken();
     const router = useRouter();
+    const [assignments, setAssignments] = useState([]);
+    const [submissions, setSubmissions] = useState([]);
     const assignment_id = router.query.id;
+
+    useEffect(() => {
+        const fetchData = async (id) => {
+            getAssignments(id);
+        };
+
+        const getAssignments = async (id) => {
+            try {
+                const response = await axios.post(
+                    "https://wsfda4sktc.execute-api.eu-west-2.amazonaws.com/v1/get-assignment-details",
+                    {
+                        assignment_id: id,
+                    }
+                );
+                if (response.data.statusCode == 200) {
+                    setAssignments(response.data.assignment);
+                    setSubmissions(response.data.assignment.submissions);
+                    console.log(response.data);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        fetchData(assignment_id);
+    }, [router]);
 
     const handleSubmit = async (e) => {
         const file = e.target.files[0];
@@ -23,7 +51,7 @@ const assignment = () => {
             formData.append('assignment_id', assignment_id);
             const response = await axios.post('http://localhost:8000/upload', formData)
 
-            console.log(response.json);
+            console.log(response);
         } catch (error) {
             console.log(error.response?.data.error)
         }
@@ -33,12 +61,15 @@ const assignment = () => {
             <Navbar />
             <div className='main m-10 gap-4'>
                 <div className='p-4'>
-                    <h1 className='text-lg font-semibold'>assignment name</h1>
+                    <h1 className='text-lg font-semibold text-pink-700'>Assignment</h1>
+                </div>
+                <div className='p-4'>
+                    <h2>Instructions: {assignments.description}</h2>
+                </div>
+                <div className="p-4">
+                    <Download file_id={assignments.file_id?.$oid} />
                 </div>
                 <div className='grid grid-cols-2'>
-                    <div className='p-4'>
-                        <h2>assignment pdf</h2>
-                    </div>
                     <div className='p-8 flex justify-center border-2 shadow-xl rounded-lg'>
                         <form className='w-1/2'>
                             <div className='relative'>
@@ -65,9 +96,17 @@ const assignment = () => {
                             </button>
                         </form>
                     </div>
-                    <div className='p-4'>
-                        <h2>Checked assignment</h2>
-                    </div>
+                    {submissions?.map((item) => {
+                        if (item.student_name === username) {
+                            return (
+                                <div className='p-4'>
+                                    <h2>Checked assignment</h2>
+                                    <br />
+                                    <Download file_id={item.checked_file_id.$oid} />
+                                </div>
+                            )
+                        }
+                    })}
                 </div>
             </div>
         </>

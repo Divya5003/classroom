@@ -1,6 +1,6 @@
 import Classes from '@/components/Classes'
 import Navbar from '@/components/Navbar'
-import {getToken} from '@/utils/sessions';
+import { getToken } from '@/utils/sessions';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { stringify } from 'postcss';
@@ -40,7 +40,7 @@ const Dashboard = () => {
         <>
             <Navbar />
             <div className='main m-10 grid grid-cols-4 gap-4'>
-                {classes.map((classItem) => (
+                {classes?.map((classItem) => (
                     <Classes
                         key={classItem.class_code}
                         subject={classItem.name}

@@ -48,19 +48,17 @@ const assignment = () => {
       <Navbar />
       <div className="main m-10 gap-4">
         <div className="p-4">
-          <h1 className="text-lg font-semibold">Assignment</h1>
+          <h1 className="text-lg font-semibold text-pink-700">Assignment</h1>
         </div>
         <div className="p-4">
-          <Download file_id={assignments.file_id} />
+          <Download file_id={assignments.file_id?.$oid} />
         </div>
-        <div className="grid grid-cols-2">
-          <div className="p-4">
-            <h2>{assignments.description}</h2>
-          </div>
-          {submissions.map((item) => (
-            <Assignment key={item.file_id} student={item.student_name} />
-          ))}
+        <div className="p-4">
+          <h2><strong>Instructions</strong>: {assignments.description}</h2>
         </div>
+        {submissions?.map((item) => (
+          <Assignment key={item.file_id} student={item.student_name} />
+        ))}
       </div>
     </>
   );

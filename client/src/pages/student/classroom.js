@@ -45,13 +45,10 @@ const Classroom = () => {
             <Navbar />
             <div className="main m-10 gap-4">
                 <div className="p-4">
-                    <h1 className="text-lg font-semibold">standard/subject</h1>
+                    <h1 className="text-lg font-semibold">Assignments</h1>
                 </div>
-                <div className="p-4">
-                    <h2>teacher</h2>
-                </div>
-                {assignments.map((classItem) => (
-                    <Sheets key={classItem} id={classItem} />
+                {assignments?.map((classItem, index) => (
+                    <Sheets key={classItem} id={classItem} i={index} />
                 ))}
             </div>
         </>
